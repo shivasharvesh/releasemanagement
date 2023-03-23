@@ -1,0 +1,209 @@
+* {
+	box-sizing: border-box;
+
+}
+
+body {
+	background-color: rgba(220, 220, 220, 0.267);
+	overflow: hidden;
+}
+
+.header {
+	display: flex;
+	padding: 0;
+	margin: 0;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	background-color: white;
+	box-shadow: 1px 2px 1px gray;
+	background-color: rgb(231 231 231);
+	margin-bottom: 1rem;
+	top: 0;
+	left: 0;
+	position: fixed;
+}
+.header .kriya-logo {
+	margin: 0.5rem;
+}
+
+.draft-tickets {
+	color: black;
+	width: 5rem;
+	height: 2rem;
+	cursor: pointer;
+	padding-right: 3rem;
+}
+.draft-tickets p {
+	width: max-content;
+	padding: 0;
+	margin: 0;
+}
+
+.releases {
+	display: flex;
+	overflow: hidden;
+	margin-top: 6rem;
+}
+
+.releases .release-year {
+	font-size: medium;
+	color: gray;
+}
+
+.release-list {
+	height: 89vh;
+	overflow-y: auto;
+}
+
+.filter-icon {
+	margin-top: 2.2rem;
+	margin-left: 1rem;
+	width: 3rem;
+	border: 1px solid #6b2e7d;
+	border-radius: 50%;
+	width: 2.5rem;
+	height: 2.5rem;
+	padding: 0.2rem;
+	box-shadow: 1px 2px 2px 2px gray;
+	cursor: pointer;
+	color: #6b2e7d;
+}
+.filter-icon.active{
+	color: white;
+	background-color:#6b2e7d ;
+	border: 1px solid white;
+
+}
+
+.releases .filter {
+	border: 1px solid gray;
+	text-align: center;
+	padding: 0.5rem;
+	box-shadow: 2px 2px 10px 3px #8080807d;
+	border-radius: 5px;
+	background-color: white;
+	position: relative;
+}
+.releases .filter .close-filter {
+	right: 1rem;
+	top: 0.2rem;
+	position: absolute;
+	cursor: pointer;
+	color: black;
+	font-weight: bold;
+}
+
+.releases .filter .filter-month:hover {
+	color: #6b2e7d;
+	cursor: pointer;
+	font-weight: 500;
+	scale: 1.1;
+}
+.releases .filter .filter-month.active {
+	color: #6b2e7d;
+	font-weight: bold;
+	scale: 1.1;
+}
+
+.releases .release-list {
+	width: 100%;
+	padding: 2rem;
+}
+
+.draft-releases {
+	height: 85vh;
+	overflow-y: auto !important ;
+	margin-top: 6rem;
+}
+
+.draft-releases .ticket-card {
+	margin: auto;
+	margin-top: 1rem;
+	padding: 0.5rem;
+	position: relative;
+	cursor: pointer;
+}
+.draft-releases .ticket-card:hover {
+	scale: calc(1.01);
+	box-shadow: 1px 1px 2px 2px gray;
+}
+
+.draft-releases .title {
+	text-align: center;
+}
+.editor {
+	width: 80%;
+	margin: auto;
+}
+
+.editor .ticket-title {
+	border: 1px solid rgba(128, 128, 128, 0.555);
+	height: 2rem;
+	font-size: 1.2rem;
+	padding: 0.5rem;
+	border-radius: 2px;
+	font-weight: bold;
+	font-size: medium;
+	width: 98%;
+}
+
+.editor .chip {
+	border-radius: 3px;
+	font-weight: bolder;
+	color: #6b2e7d;
+	background-color: rgba(128, 128, 128, 0.094);
+}
+
+.editor .save {
+	display: flex;
+	justify-content: center;
+	gap: 1rem;
+}
+
+.release-list .release-ticket {
+	width: 90%;
+}
+
+.ticket-created-date {
+	padding-bottom: 0.5rem;
+}
+.release-list .features,
+.release-list .improvements {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	margin-left: 2rem;
+}
+
+.loading {
+	top: 50%;
+	left: 50%;
+	position: absolute;
+}
+.draft-releases .ticket-card.edited-ticket {
+	border: 2px solid orange;
+}
+.draft-releases .ticket-card.released-ticket {
+	border: 2px solid green;
+}
+
+.fadeOut {
+	opacity: 0;
+	width: 0;
+	height: 0;
+	transition: width 0.2s 0.2s, height 0.2s, opacity 0.5s;
+}
+.fadeIn {
+	opacity: 1;
+	width: 15rem;
+	height: fit-content;
+	transition: width 0.2s, height 0.2s, opacity 0.5s 0.5s;
+}
+
+.alert {
+	width: fit-content;
+	position: absolute;
+	right: 3rem;
+}
