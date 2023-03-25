@@ -5,6 +5,10 @@ import {useEffect, useState} from 'react';
 import {Accordion, AccordionDetails, AccordionSummary} from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import {AdapterDayjs} from '@mui/x-date-pickers/AdapterDayjs';
+import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
+import {DatePicker} from '@mui/x-date-pickers/DatePicker';
+import dayjs from 'dayjs';
 
 export default function Releases(props: any) {
 	const [featureTickets, setFeatureTickets] = useState<any[]>([]);
@@ -12,6 +16,7 @@ export default function Releases(props: any) {
 	const [sortedFeatureTickets, setSortedFeatureTickets] = useState({});
 	const [sortedImprovementTickets, setSortedImprovementTickets] = useState({});
 	const [filterMonth, setFilterMonth] = useState<null | string>(null);
+	const [filterYear, setFilterYear] = useState<null | string>(null);
 	const [showFilter, setShowFilter] = useState(false);
 
 	const sortFeatureTicketsByMonth = () => {
@@ -40,6 +45,7 @@ export default function Releases(props: any) {
 		setSortedImprovementTickets(sortedImprovementTicketsCopy);
 	};
 
+
 	const getTickets = async () => {
 		const feature = await axios.get('/api/getgittickets?draft=false&releasetype=feature');
 		const improvement = await axios.get('/api/getgittickets?draft=false&releasetype=improvement');
@@ -47,7 +53,7 @@ export default function Releases(props: any) {
 		setImprovementTickets(improvement.data);
 	};
 	useEffect(() => {
-		getTickets();
+		// getTickets();
 	}, []);
 
 	useEffect(() => {
@@ -61,17 +67,33 @@ export default function Releases(props: any) {
 	return (
 		<>
 			<div className='releases'>
-				{
-				!showFilter &&
-				<CalendarMonthIcon className={`filter-icon ${filterMonth && 'active'}`} onClick={()=>setShowFilter(true)} fontSize={'large'}/>
-				}
-				<div className={`filter ${showFilter ? 'fadeIn' : 'fadeOut'}`}>
+				<CalendarMonthIcon className={`filter-icon ${filterMonth && 'active'}`} onClick={() => setShowFilter(!showFilter)} fontSize={'large'} />
+				<LocalizationProvider dateAdapter={AdapterDayjs}>
+					<DatePicker
+						sx={{
+							'.MuiInputBase-adornedEnd':{ opacity:0 },
+						}}
+						minDate={dayjs('01/01/2004')}
+						maxDate={dayjs()}
+						onYearChange={(year)=>{setFilterYear(dayjs(year).year().toLocaleString())}}
+						onMonthChange={(month)=>{}}
+						open={showFilter}
+						disableFuture={true}
+						views={['year', 'month']}
+					/>
+				</LocalizationProvider>
+				{/* <div className={`filter ${showFilter ? 'fadeIn' : 'fadeOut'}`}>
 					<Typography fontWeight={'bold'} color={'#6b2e7d'} variant='h6' component='h5'>
-						Filter 
-						<span className='close-filter' onClick={()=>setShowFilter(false)}>X</span>
+						Filter
+						<span className='close-filter' onClick={() => setShowFilter(false)}>
+							X
+						</span>
 					</Typography>
 					<Divider />
 					<br />
+					<LocalizationProvider dateAdapter={AdapterDayjs}>
+						<DatePicker label={'"month" and "year"'} views={['month', 'year']} />
+					</LocalizationProvider>
 					{props.months.map((month: string) => (
 						<Typography
 							key={month}
@@ -89,10 +111,10 @@ export default function Releases(props: any) {
 							{month}
 						</Typography>
 					))}
-				</div>
+				</div> */}
 				<div className='release-list'>
 					<Typography fontWeight={'bold'} fontStyle={'italic'} variant='h5' component='h2'>
-						Releases <span className='release-year'>March 2023</span> 
+						Releases <span className='release-year'>March 2023</span>
 					</Typography>
 					<Divider />
 					<br />
@@ -119,9 +141,11 @@ export default function Releases(props: any) {
 													{new Date(ticket.created_date).toLocaleDateString()}
 												</Typography>
 											)}
-											<Accordion defaultExpanded={true}  className='release-ticket ck-content'>
+											<Accordion defaultExpanded={true} className='release-ticket ck-content'>
 												<AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
-													<Typography fontWeight={'bold'} variant='h6'>{ticket.title}</Typography>
+													<Typography fontWeight={'bold'} variant='h6'>
+														{ticket.title}
+													</Typography>
 												</AccordionSummary>
 												<AccordionDetails dangerouslySetInnerHTML={{__html: ticket.description}} />
 											</Accordion>
@@ -144,9 +168,11 @@ export default function Releases(props: any) {
 												{new Date(ticket.created_date).toLocaleDateString()}
 											</Typography>
 										)}
-										<Accordion defaultExpanded={true}  className='release-ticket ck-content'>
+										<Accordion defaultExpanded={true} className='release-ticket ck-content'>
 											<AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
-												<Typography fontWeight={'bold'} variant='h6'>{ticket.title}</Typography>
+												<Typography fontWeight={'bold'} variant='h6'>
+													{ticket.title}
+												</Typography>
 											</AccordionSummary>
 											<AccordionDetails dangerouslySetInnerHTML={{__html: ticket.description}} />
 										</Accordion>
@@ -179,9 +205,11 @@ export default function Releases(props: any) {
 													{new Date(ticket.created_date).toLocaleDateString()}
 												</Typography>
 											)}
-											<Accordion defaultExpanded={false}  className='release-ticket ck-content'>
+											<Accordion defaultExpanded={false} className='release-ticket ck-content'>
 												<AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
-													<Typography fontWeight={'bold'} variant='h6'>{ticket.title}</Typography>
+													<Typography fontWeight={'bold'} variant='h6'>
+														{ticket.title}
+													</Typography>
 												</AccordionSummary>
 												<AccordionDetails dangerouslySetInnerHTML={{__html: ticket.description}} />
 											</Accordion>
@@ -201,9 +229,11 @@ export default function Releases(props: any) {
 												{new Date(ticket.created_date).toLocaleDateString()}
 											</Typography>
 										)}
-										<Accordion defaultExpanded={false}  className='release-ticket ck-content'>
+										<Accordion defaultExpanded={false} className='release-ticket ck-content'>
 											<AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
-												<Typography fontWeight={'bold'} variant='h6'>{ticket.title}</Typography>
+												<Typography fontWeight={'bold'} variant='h6'>
+													{ticket.title}
+												</Typography>
 											</AccordionSummary>
 											<AccordionDetails dangerouslySetInnerHTML={{__html: ticket.description}} />
 										</Accordion>
