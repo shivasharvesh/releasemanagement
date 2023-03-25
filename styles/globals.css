@@ -4,7 +4,6 @@
 }
 
 body {
-	background-color: rgba(220, 220, 220, 0.267);
 	overflow: hidden;
 }
 
@@ -53,7 +52,7 @@ body {
 }
 
 .release-list {
-	height: 89vh;
+	height: 85vh;
 	overflow-y: auto;
 }
 
@@ -163,6 +162,7 @@ body {
 }
 
 .release-list .release-ticket {
+	box-shadow: none !important;
 	width: 90%;
 }
 

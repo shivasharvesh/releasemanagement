@@ -119,9 +119,9 @@ export default function Releases(props: any) {
 													{new Date(ticket.created_date).toLocaleDateString()}
 												</Typography>
 											)}
-											<Accordion defaultExpanded={true} elevation={2} className='release-ticket ck-content'>
+											<Accordion defaultExpanded={true}  className='release-ticket ck-content'>
 												<AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
-													<Typography fontWeight={'bold'}>{ticket.title}</Typography>
+													<Typography fontWeight={'bold'} variant='h6'>{ticket.title}</Typography>
 												</AccordionSummary>
 												<AccordionDetails dangerouslySetInnerHTML={{__html: ticket.description}} />
 											</Accordion>
@@ -144,9 +144,9 @@ export default function Releases(props: any) {
 												{new Date(ticket.created_date).toLocaleDateString()}
 											</Typography>
 										)}
-										<Accordion defaultExpanded={true} elevation={2} className='release-ticket ck-content'>
+										<Accordion defaultExpanded={true}  className='release-ticket ck-content'>
 											<AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
-												<Typography fontWeight={'bold'}>{ticket.title}</Typography>
+												<Typography fontWeight={'bold'} variant='h6'>{ticket.title}</Typography>
 											</AccordionSummary>
 											<AccordionDetails dangerouslySetInnerHTML={{__html: ticket.description}} />
 										</Accordion>
@@ -179,9 +179,9 @@ export default function Releases(props: any) {
 													{new Date(ticket.created_date).toLocaleDateString()}
 												</Typography>
 											)}
-											<Accordion defaultExpanded={false} elevation={2} className='release-ticket ck-content'>
+											<Accordion defaultExpanded={false}  className='release-ticket ck-content'>
 												<AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
-													<Typography fontWeight={'bold'}>{ticket.title}</Typography>
+													<Typography fontWeight={'bold'} variant='h6'>{ticket.title}</Typography>
 												</AccordionSummary>
 												<AccordionDetails dangerouslySetInnerHTML={{__html: ticket.description}} />
 											</Accordion>
@@ -201,9 +201,9 @@ export default function Releases(props: any) {
 												{new Date(ticket.created_date).toLocaleDateString()}
 											</Typography>
 										)}
-										<Accordion defaultExpanded={false} elevation={2} className='release-ticket ck-content'>
+										<Accordion defaultExpanded={false}  className='release-ticket ck-content'>
 											<AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
-												<Typography fontWeight={'bold'}>{ticket.title}</Typography>
+												<Typography fontWeight={'bold'} variant='h6'>{ticket.title}</Typography>
 											</AccordionSummary>
 											<AccordionDetails dangerouslySetInnerHTML={{__html: ticket.description}} />
 										</Accordion>
