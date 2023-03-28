@@ -25,7 +25,11 @@ export default function Editor(props: any) {
 	const handleDraftSave = async () => {
 		let publicView = true;
 		if (visibility == 'private') publicView = false;
-		let data = {iid: props.ticket.iid, title, description, draft: true, public: publicView, releasetype: releaseType};
+		const created_date = new Date().getTime();
+		let created_month = new Date().getMonth();
+		created_month = props.months[created_month];
+		let created_year = new Date().getFullYear();
+		let data = {iid: props.ticket.iid, title, description, draft: true, public: publicView, releasetype: releaseType, created_date, created_month, created_year};
 		await axios.post('/api/addreleaseticket', {
 			id: props.ticket.iid,
 			index: 'releases',
@@ -40,14 +44,15 @@ export default function Editor(props: any) {
 		const created_date = new Date().getTime();
 		let created_month = new Date().getMonth();
 		created_month = props.months[created_month];
-		let data = {title, description, draft: false, public: publicView, releasetype: releaseType, created_date, created_month};
+		let created_year = new Date().getFullYear();
+		let data = {iid: props.ticket.iid, title, description, draft: false, public: publicView, releasetype: releaseType, created_date, created_month, created_year};
 		await axios.post('/api/addreleaseticket', {
 			id: props.ticket.iid,
 			index: 'releases',
 			postContent: true,
 			data,
 		});
-		props.removeReleasedTicket();
+		props.updateReleasedTicket(data);
 	};
 
 	return (

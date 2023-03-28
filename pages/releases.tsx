@@ -13,108 +13,64 @@ import dayjs from 'dayjs';
 export default function Releases(props: any) {
 	const [featureTickets, setFeatureTickets] = useState<any[]>([]);
 	const [improvementTickets, setImprovementTickets] = useState<any[]>([]);
-	const [sortedFeatureTickets, setSortedFeatureTickets] = useState({});
-	const [sortedImprovementTickets, setSortedImprovementTickets] = useState({});
 	const [filterMonth, setFilterMonth] = useState<null | string>(null);
 	const [filterYear, setFilterYear] = useState<null | string>(null);
 	const [showFilter, setShowFilter] = useState(false);
-
-	const sortFeatureTicketsByMonth = () => {
-		const sortedFeatureTicketsCopy = sortedFeatureTickets;
-		for (const featureTicket of featureTickets) {
-			if (!sortedFeatureTicketsCopy[featureTicket.created_month]) {
-				sortedFeatureTicketsCopy[featureTicket.created_month] = [];
-				sortedFeatureTicketsCopy[featureTicket.created_month].push(featureTicket);
-			} else {
-				sortedFeatureTicketsCopy[featureTicket.created_month].push(featureTicket);
-			}
-		}
-		setSortedFeatureTickets(sortedFeatureTicketsCopy);
-	};
-
-	const sortImprovementsTicketsByMonth = () => {
-		const sortedImprovementTicketsCopy = sortedImprovementTickets;
-		for (const improvementTicket of improvementTickets) {
-			if (!sortedImprovementTicketsCopy[improvementTicket.created_month]) {
-				sortedImprovementTicketsCopy[improvementTicket.created_month] = [];
-				sortedImprovementTicketsCopy[improvementTicket.created_month].push(improvementTicket);
-			} else {
-				sortedImprovementTicketsCopy[improvementTicket.created_month].push(improvementTicket);
-			}
-		}
-		setSortedImprovementTickets(sortedImprovementTicketsCopy);
-	};
-
+	const [selectedDate, setSelectedDate] = useState('');
 
 	const getTickets = async () => {
-		const feature = await axios.get('/api/getgittickets?draft=false&releasetype=feature');
-		const improvement = await axios.get('/api/getgittickets?draft=false&releasetype=improvement');
+		const currentYear = new Date().getFullYear();
+		let currentMonth = new Date().getMonth();
+		currentMonth = props.months[currentMonth];
+		setFilterMonth(currentMonth.toString());
+		setFilterYear(currentYear.toString());
+		setSelectedDate(`${currentMonth.toString()} ${currentYear.toString()}`);
+		const feature = await axios.get(`/api/gettickets?draft=false&releasetype=feature&created_year=${currentYear}&created_month=${currentMonth}`);
+		const improvement = await axios.get(`/api/gettickets?draft=false&releasetype=improvement&created_year=${currentYear}&created_month=${currentMonth}`);
 		setFeatureTickets(feature.data);
 		setImprovementTickets(improvement.data);
 	};
 	useEffect(() => {
-		// getTickets();
+		getTickets();
 	}, []);
 
-	useEffect(() => {
-		sortFeatureTicketsByMonth();
-	}, [featureTickets]);
-
-	useEffect(() => {
-		sortImprovementsTicketsByMonth();
-	}, [improvementTickets]);
+	const handleFilterMonth = async (month: number) => {
+		const selectedMonth = props.months[month];
+		setFilterMonth(selectedMonth);
+		setShowFilter(false);
+		setSelectedDate(`${selectedMonth} ${filterYear}`);
+		const feature = await axios.get(`/api/gettickets?draft=false&releasetype=feature&created_year=${filterYear}&created_month=${selectedMonth}`);
+		const improvement = await axios.get(`/api/gettickets?draft=false&releasetype=improvement&created_year=${filterYear}&created_month=${selectedMonth}`);
+		setFeatureTickets(feature.data);
+		setImprovementTickets(improvement.data);
+	};
 
 	return (
 		<>
 			<div className='releases'>
-				<CalendarMonthIcon className={`filter-icon ${filterMonth && 'active'}`} onClick={() => setShowFilter(!showFilter)} fontSize={'large'} />
+				<CalendarMonthIcon className='filter-icon' onClick={() => setShowFilter(!showFilter)} fontSize={'large'} />
 				<LocalizationProvider dateAdapter={AdapterDayjs}>
 					<DatePicker
 						sx={{
-							'.MuiInputBase-adornedEnd':{ opacity:0 },
+							'.MuiInputBase-adornedEnd': {opacity: 0, width: 0},
 						}}
 						minDate={dayjs('01/01/2004')}
 						maxDate={dayjs()}
-						onYearChange={(year)=>{setFilterYear(dayjs(year).year().toLocaleString())}}
-						onMonthChange={(month)=>{}}
+						onYearChange={(year) => {
+							setFilterYear(dayjs(year).year().toString());
+						}}
+						onMonthChange={(month) => {
+							handleFilterMonth(dayjs(month).month());
+						}}
 						open={showFilter}
 						disableFuture={true}
 						views={['year', 'month']}
 					/>
 				</LocalizationProvider>
-				{/* <div className={`filter ${showFilter ? 'fadeIn' : 'fadeOut'}`}>
-					<Typography fontWeight={'bold'} color={'#6b2e7d'} variant='h6' component='h5'>
-						Filter
-						<span className='close-filter' onClick={() => setShowFilter(false)}>
-							X
-						</span>
-					</Typography>
-					<Divider />
-					<br />
-					<LocalizationProvider dateAdapter={AdapterDayjs}>
-						<DatePicker label={'"month" and "year"'} views={['month', 'year']} />
-					</LocalizationProvider>
-					{props.months.map((month: string) => (
-						<Typography
-							key={month}
-							onClick={() => {
-								if (filterMonth == month) {
-									setFilterMonth(null);
-								} else {
-									setFilterMonth(month);
-								}
-							}}
-							className={`filter-month ${filterMonth == month ? 'active' : ''}`}
-							color={'gray'}
-							variant='h6'
-							component='h5'>
-							{month}
-						</Typography>
-					))}
-				</div> */}
+
 				<div className='release-list'>
 					<Typography fontWeight={'bold'} fontStyle={'italic'} variant='h5' component='h2'>
-						Releases <span className='release-year'>March 2023</span>
+						Releases <span className='release-year'>{selectedDate}</span>
 					</Typography>
 					<Divider />
 					<br />
@@ -123,61 +79,32 @@ export default function Releases(props: any) {
 					</Typography>
 					<br />
 					<div className='features'>
-						{filterMonth
-							? sortedFeatureTickets[filterMonth]
-								? sortedFeatureTickets[filterMonth].map((ticket, index) => (
-										<div key={index} className='release-ticket-wrapper'>
-											{index != 0 ? (
-												new Date(featureTickets[index - 1].created_date).toLocaleDateString() != new Date(ticket.created_date).toLocaleDateString() ? (
-													<>
-														<br />
-														<Typography variant='body2' className='ticket-created-date' fontWeight={'bold'} color='gray'>
-															{new Date(ticket.created_date).toLocaleDateString()}
-														</Typography>
-													</>
-												) : null
-											) : (
-												<Typography variant='body2' className='ticket-created-date' fontWeight={'bold'} color='gray'>
-													{new Date(ticket.created_date).toLocaleDateString()}
-												</Typography>
-											)}
-											<Accordion defaultExpanded={true} className='release-ticket ck-content'>
-												<AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
-													<Typography fontWeight={'bold'} variant='h6'>
-														{ticket.title}
-													</Typography>
-												</AccordionSummary>
-												<AccordionDetails dangerouslySetInnerHTML={{__html: ticket.description}} />
-											</Accordion>
-										</div>
-								  ))
-								: null
-							: featureTickets.map((ticket, index) => (
-									<div key={index} className='release-ticket-wrapper'>
-										{index != 0 ? (
-											new Date(featureTickets[index - 1].created_date).toLocaleDateString() != new Date(ticket.created_date).toLocaleDateString() ? (
-												<>
-													<br />
-													<Typography variant='body2' className='ticket-created-date' fontWeight={'bold'} color='gray'>
-														{new Date(ticket.created_date).toLocaleDateString()}
-													</Typography>
-												</>
-											) : null
-										) : (
+						{featureTickets.map((ticket, index) => (
+							<div key={index} className='release-ticket-wrapper'>
+								{index != 0 ? (
+									new Date(featureTickets[index - 1].created_date).toLocaleDateString() != new Date(ticket.created_date).toLocaleDateString() ? (
+										<>
+											<br />
 											<Typography variant='body2' className='ticket-created-date' fontWeight={'bold'} color='gray'>
 												{new Date(ticket.created_date).toLocaleDateString()}
 											</Typography>
-										)}
-										<Accordion defaultExpanded={true} className='release-ticket ck-content'>
-											<AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
-												<Typography fontWeight={'bold'} variant='h6'>
-													{ticket.title}
-												</Typography>
-											</AccordionSummary>
-											<AccordionDetails dangerouslySetInnerHTML={{__html: ticket.description}} />
-										</Accordion>
-									</div>
-							  ))}
+										</>
+									) : null
+								) : (
+									<Typography variant='body2' className='ticket-created-date' fontWeight={'bold'} color='gray'>
+										{new Date(ticket.created_date).toLocaleDateString()}
+									</Typography>
+								)}
+								<Accordion defaultExpanded={true} className='release-ticket ck-content'>
+									<AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content'>
+										<Typography fontWeight={'bold'} variant='h6'>
+											{index + 1}. {ticket.title}
+										</Typography>
+									</AccordionSummary>
+									<AccordionDetails dangerouslySetInnerHTML={{__html: ticket.description}} />
+								</Accordion>
+							</div>
+						))}
 					</div>
 					<br />
 					<Divider />
@@ -187,58 +114,29 @@ export default function Releases(props: any) {
 					</Typography>
 					<br />
 					<div className='improvements'>
-						{filterMonth
-							? sortedImprovementTickets[filterMonth]
-								? sortedImprovementTickets[filterMonth].map((ticket, index) => (
-										<div key={index} className='release-ticket-wrapper'>
-											{index != 0 ? (
-												new Date(featureTickets[index - 1].created_date).toLocaleDateString() != new Date(ticket.created_date).toLocaleDateString() ? (
-													<>
-														<br />
-														<Typography variant='body2' className='ticket-created-date' fontWeight={'bold'} color='gray'>
-															{new Date(ticket.created_date).toLocaleDateString()}
-														</Typography>
-													</>
-												) : null
-											) : (
-												<Typography variant='body2' className='ticket-created-date' fontWeight={'bold'} color='gray'>
-													{new Date(ticket.created_date).toLocaleDateString()}
-												</Typography>
-											)}
-											<Accordion defaultExpanded={false} className='release-ticket ck-content'>
-												<AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
-													<Typography fontWeight={'bold'} variant='h6'>
-														{ticket.title}
-													</Typography>
-												</AccordionSummary>
-												<AccordionDetails dangerouslySetInnerHTML={{__html: ticket.description}} />
-											</Accordion>
-										</div>
-								  ))
-								: null
-							: improvementTickets.map((ticket, index) => (
-									<div key={index} className='release-ticket-wrapper'>
-										{index != 0 ? (
-											new Date(improvementTickets[index - 1].created_date).toLocaleDateString() != new Date(ticket.created_date).toLocaleDateString() ? (
-												<Typography variant='body2' className='ticket-created-date' fontWeight={'bold'} color='gray'>
-													{new Date(ticket.created_date).toLocaleDateString()}
-												</Typography>
-											) : null
-										) : (
-											<Typography variant='body2' className='ticket-created-date' fontWeight={'bold'} color='gray'>
-												{new Date(ticket.created_date).toLocaleDateString()}
-											</Typography>
-										)}
-										<Accordion defaultExpanded={false} className='release-ticket ck-content'>
-											<AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
-												<Typography fontWeight={'bold'} variant='h6'>
-													{ticket.title}
-												</Typography>
-											</AccordionSummary>
-											<AccordionDetails dangerouslySetInnerHTML={{__html: ticket.description}} />
-										</Accordion>
-									</div>
-							  ))}
+						{improvementTickets.map((ticket, index) => (
+							<div key={index} className='release-ticket-wrapper'>
+								{index != 0 ? (
+									new Date(improvementTickets[index - 1].created_date).toLocaleDateString() != new Date(ticket.created_date).toLocaleDateString() ? (
+										<Typography variant='body2' className='ticket-created-date' fontWeight={'bold'} color='gray'>
+											{new Date(ticket.created_date).toLocaleDateString()}
+										</Typography>
+									) : null
+								) : (
+									<Typography variant='body2' className='ticket-created-date' fontWeight={'bold'} color='gray'>
+										{new Date(ticket.created_date).toLocaleDateString()}
+									</Typography>
+								)}
+								<Accordion defaultExpanded={false} className='release-ticket ck-content'>
+									<AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content'>
+										<Typography fontWeight={'bold'} variant='h6'>
+											{index + 1}. {ticket.title}
+										</Typography>
+									</AccordionSummary>
+									<AccordionDetails dangerouslySetInnerHTML={{__html: ticket.description}} />
+								</Accordion>
+							</div>
+						))}
 					</div>
 				</div>
 			</div>

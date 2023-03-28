@@ -8,6 +8,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 	let draft = '*';
 	let visibility = '*';
 	let releasetype = '*';
+	let created_year = '*';
+	let created_month = '*';
 	let size = '100';
 	//@ts-ignore
 	if (req.query.draft) draft = req.query.draft;
@@ -15,6 +17,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 	if (req.query.public) visibility = req.query.public;
 	//@ts-ignore
 	if (req.query.releasetype) releasetype = req.query.releasetype;
+	//@ts-ignore
+	if (req.query.created_year) created_year = req.query.created_year;
+	//@ts-ignore
+	if (req.query.created_month) created_month = req.query.created_month;
 
 	let draftTickets = await axios.post(`${process.env.ELASITC_URL}/query/getreleases`, {
 		index: 'releases',
@@ -22,6 +28,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 		public: visibility,
 		releasetype,
 		size,
+		created_year,
+		created_month,
 	});
 
 	draftTickets = draftTickets.data.body.hits.hits;
@@ -34,16 +42,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 			...draftTicket._source,
 			iid: draftTicket._id,
 		};
-
 		if (draftTicket._source.public && draft == 'false' && !draftTicket._source.draft) {
 			gitTickets.push(ticketData);
-		} else if(!req.query.draft) {
+		} else if (!req.query.draft) {
 			gitTickets.push(ticketData);
 		}
 	}
 
-	for (const project of config) {
-		if (draft != 'false') {
+	if (draft != 'false') {
+		for (const project of config) {
 			const tickets = await axios.get(`https://gitlab.com/api/v4/projects/${project.projectId}/issues?state=closed&labels=Moved to Live${ignoreTickets}`, {
 				headers: {
 					'PRIVATE-TOKEN': process.env.GITLAB_TOKEN,
